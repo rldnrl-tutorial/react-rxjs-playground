@@ -7,6 +7,7 @@ import Card from '@/libs/ui/Card'
 export default function Deck() {
   const { deck$ } = usePokemon()
   const deck = useObservableState(deck$, [])
+
   return (
     <div>
       <h2>Deck</h2>
