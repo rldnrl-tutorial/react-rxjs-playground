@@ -1,28 +1,40 @@
-import { Pokemon, pokemon$, selectedPokemon$ } from '@/libs/store'
+import React, { ChangeEventHandler, useMemo } from 'react'
+import { useObservableState } from 'observable-hooks'
+
+import { usePokemon } from '@/libs/store'
 import Input from '@/libs/ui/Input'
-import React, { ChangeEventHandler, useEffect, useState, useMemo } from 'react'
+import { BehaviorSubject, combineLatestWith, map } from 'rxjs'
 
 export default function Search() {
-  const [search, setSearch] = useState('')
-  const [pokemon, setPokemon] = useState<Pokemon[]>([])
+  const { pokemon$, selectedPokemon$ } = usePokemon()
+  const search$ = useMemo(() => new BehaviorSubject(''), [])
+  const pokemon = useObservableState(pokemon$, [])
 
-  useEffect(() => {
-    const sub = pokemon$.subscribe(setPokemon)
-    return () => sub.unsubscribe()
-  }, [])
+  const [filteredPokemon] = useObservableState(
+    () =>
+      pokemon$.pipe(
+        combineLatestWith(search$),
+        map(([pokemon, search]) =>
+          pokemon.filter((p) =>
+            p.name.toLowerCase().includes(search.toLowerCase())
+          )
+        )
+      ),
+    []
+  )
 
-  const filteredPokemon = useMemo(() => {
-    return pokemon.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    )
-  }, [pokemon, search])
+  // const filteredPokemon = useMemo(() => {
+  //   return pokemon.filter((p) =>
+  //     p.name.toLowerCase().includes(search$.value.toLowerCase())
+  //   )
+  // }, [pokemon])
 
   const onChangeSearch: ChangeEventHandler<HTMLInputElement> = (e) =>
-    setSearch(e.target.value)
+    search$.next(e.target.value)
 
   return (
-    <>
-      <Input type="text" value={search} onChange={onChangeSearch} />
+    <div>
+      <Input type="text" value={search$.value} onChange={onChangeSearch} />
       {filteredPokemon.map((p) => (
         <div key={p.name}>
           <Input
@@ -41,6 +53,6 @@ export default function Search() {
           <strong>{p.name}</strong> - {p.power}
         </div>
       ))}
-    </>
+    </div>
   )
 }
