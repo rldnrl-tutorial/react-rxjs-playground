@@ -1,4 +1,5 @@
 import axios from 'axios'
+import React, { createContext, useContext } from 'react'
 import { BehaviorSubject, combineLatestWith, map } from 'rxjs'
 
 export interface Pokemon {
@@ -44,4 +45,34 @@ export const pokemon$ = pokemonWithPower$.pipe(
   )
 )
 
+export const deck$ = pokemon$.pipe(
+  map((pokemon) => pokemon.filter((p) => p.selected))
+)
+
 axios.get<Pokemon[]>('/api/pokemon').then(({ data }) => rawPokemon$.next(data))
+
+export const PokemonContext = createContext({
+  pokemon$,
+  selectedPokemon$,
+  deck$,
+})
+
+export const usePokemon = () => useContext(PokemonContext)
+
+interface PokemonProviderProps {
+  children?: React.ReactNode
+}
+
+export const PokemonProvider = ({ children }: PokemonProviderProps) => {
+  return (
+    <PokemonContext.Provider
+      value={{
+        pokemon$,
+        selectedPokemon$,
+        deck$,
+      }}
+    >
+      {children}
+    </PokemonContext.Provider>
+  )
+}
