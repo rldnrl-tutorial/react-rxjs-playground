@@ -1,5 +1,11 @@
+import HomePage from '@/home/HomePage'
+import { PokemonProvider } from '@/libs/store'
 import React from 'react'
 
 export default function Home() {
-  return <div className="text-9xl">Home</div>
+  return (
+    <PokemonProvider>
+      <HomePage />
+    </PokemonProvider>
+  )
 }
