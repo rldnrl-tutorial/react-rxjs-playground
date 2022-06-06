@@ -22,12 +22,6 @@ export default function Search() {
     []
   )
 
-  // const filteredPokemon = useMemo(() => {
-  //   return pokemon.filter((p) =>
-  //     p.name.toLowerCase().includes(search$.value.toLowerCase())
-  //   )
-  // }, [pokemon])
-
   const onChangeSearch: ChangeEventHandler<HTMLInputElement> = (e) =>
     search$.next(e.target.value)
 
