@@ -8,7 +8,6 @@ import { BehaviorSubject, combineLatestWith, map } from 'rxjs'
 export default function Search() {
   const { pokemon$, selectedPokemon$ } = usePokemon()
   const search$ = useMemo(() => new BehaviorSubject(''), [])
-  const pokemon = useObservableState(pokemon$, [])
 
   const [filteredPokemon] = useObservableState(
     () =>
