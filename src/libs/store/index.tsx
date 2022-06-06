@@ -18,6 +18,8 @@ export interface Pokemon {
 
 export const rawPokemon$ = new BehaviorSubject<Pokemon[]>([])
 
+axios.get<Pokemon[]>('/api/pokemon').then(({ data }) => rawPokemon$.next(data))
+
 export const pokemonWithPower$ = rawPokemon$.pipe(
   map((pokemon) =>
     pokemon.map((p) => ({
@@ -48,8 +50,6 @@ export const pokemon$ = pokemonWithPower$.pipe(
 export const deck$ = pokemon$.pipe(
   map((pokemon) => pokemon.filter((p) => p.selected))
 )
-
-axios.get<Pokemon[]>('/api/pokemon').then(({ data }) => rawPokemon$.next(data))
 
 export const PokemonContext = createContext({
   pokemon$,
